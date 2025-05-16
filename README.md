@@ -4,7 +4,9 @@
 ![SQLite](https://img.shields.io/badge/SQLite-3-lightgrey)
 ![Лицензия](https://img.shields.io/badge/Лицензия-MIT-green)
 
-Многопоточное Java-приложение для отслеживания и логирования изменений телефонных номеров в базе данных с настраиваемыми интервалами обновления.
+Многопоточное Java-приложение для отслеживания и логирования изменений телефонных \
+номеров в базе данных с настраиваемыми интервалами обновления. \
+Генерация базы данных контактов (100 000 по умолчанию).
 
 ## Основные возможности
 
@@ -47,3 +49,19 @@ BEGIN
     INSERT INTO contact_logs(contact_id, old_phone)
     VALUES (OLD.id, OLD.phone);
 END;
+```
+
+## Установка и запуск
+
+### Требования
+- Установленный **Java JDK 17+** ([скачать с Oracle](https://www.oracle.com/java/technologies/javase-downloads.html))
+- **Maven** для сборки ([инструкция по установке](https://maven.apache.org/install.html))
+- Git (опционально)
+
+### 1. Клонирование репозитория
+```bash
+git clone https://github.com/GriffBlack/integrator.git
+cd .\integrator\
+mvn package
+ java -jar .\target\Integrator-griffblack-1.0-SNAPSHOT.jar
+
