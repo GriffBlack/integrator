@@ -18,7 +18,7 @@ public class DbConnection {
         if (config == null) {
             throw new IllegalStateException("Конфигурация не инициализирована");
         }
-        String url = "jdbc:sqlite:" + System.getProperty("user.dir") + "/" + config.getDbName();
+        String url = "jdbc:sqlite:" + System.getProperty("user.dir") + "\\" + config.getDbName();
         LOGGER.fine("Подключение к базе данных: " + url);
         return DriverManager.getConnection(url);
     }

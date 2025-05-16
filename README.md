@@ -63,5 +63,5 @@ END;
 git clone https://github.com/GriffBlack/integrator.git
 cd .\integrator\
 mvn package
- java -jar .\target\Integrator-griffblack-1.0-SNAPSHOT.jar
+java -jar .\target\Integrator-griffblack-1.0-SNAPSHOT.jar
 
