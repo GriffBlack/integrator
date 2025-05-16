@@ -4,8 +4,6 @@ old_data/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### DB
-contacts.db
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
