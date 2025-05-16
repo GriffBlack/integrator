@@ -78,23 +78,6 @@ public class ContactDao {
         }
     }
 
-//    public void insertContact(Contact contact) throws SQLException {
-//        String sql = String.format("INSERT INTO %s (name, phone) VALUES (?, ?)", tableName);
-//        LOGGER.fine("Вставка контакта: " + contact);
-//
-//        try (Connection conn = DbConnection.getConnection();
-//             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-//            pstmt.setString(1, contact.getName());
-//            pstmt.setString(2, contact.getPhone());
-//            pstmt.executeUpdate();
-//
-//            try (ResultSet rs = pstmt.getGeneratedKeys()) {
-//                if (rs.next()) {
-//                    contact.setId(rs.getInt(1));
-//                }
-//            }
-//        }
-//    }
 
     public void updateContactPhone(int id, String newPhone) throws SQLException {
         String sql = String.format("UPDATE %s SET phone = ? WHERE id = ?", tableName);
@@ -145,6 +128,24 @@ public class ContactDao {
             LOGGER.info("Таблица " + tableName + " очищена");
         }
     }
+
+//    public void insertContact(Contact contact) throws SQLException {
+//        String sql = String.format("INSERT INTO %s (name, phone) VALUES (?, ?)", tableName);
+//        LOGGER.fine("Вставка контакта: " + contact);
+//
+//        try (Connection conn = DbConnection.getConnection();
+//             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+//            pstmt.setString(1, contact.getName());
+//            pstmt.setString(2, contact.getPhone());
+//            pstmt.executeUpdate();
+//
+//            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+//                if (rs.next()) {
+//                    contact.setId(rs.getInt(1));
+//                }
+//            }
+//        }
+//    }
 
 //    public List<Contact> getAllContacts(int limit) throws SQLException {
 //        String sql = String.format("SELECT id, name, phone FROM %s LIMIT ?", tableName);
