@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 public class AppConfig {
     private static final Logger LOGGER = Logger.getLogger(AppConfig.class.getName());
+    private final Random random = new Random();
 
     private String dbName;
     private String tableName;
@@ -21,14 +22,21 @@ public class AppConfig {
     private int dbDumpMinInterval;
     private int dbDumpMaxInterval;
     private int maxContactsToUpdate;
-    private int logRetentionSeconds; // Сгенерированное M
     private int maxLogRetentionSeconds;
+
+    private int logRetentionSeconds;    // Сгенерированное M
+    private int dbDumpInterval;         // Сгенерированный интервал работы программы
+    private int phoneUpdateInterval;    // Сгенерированный интервал обновления телефонов в млс
 
     public AppConfig() {
         LOGGER.info("Инициализация конфигурации...");
         loadDefaults();
         loadConfig();
         logConfig();
+    }
+
+    public int generateRandomPhoneUpdateInterval() {
+        return phoneUpdateMinInterval + random.nextInt(phoneUpdateMaxInterval - phoneUpdateMinInterval);
     }
 
     private void loadDefaults() {
@@ -41,9 +49,12 @@ public class AppConfig {
         phoneUpdateMaxInterval = 5000;
         dbDumpMinInterval = 60;
         dbDumpMaxInterval = 300;
-        maxContactsToUpdate = 10;
         maxLogRetentionSeconds = 30;
-        logRetentionSeconds = 29;
+
+        maxContactsToUpdate = 10;
+        phoneUpdateInterval = 3000;
+        dbDumpInterval = 250;
+        logRetentionSeconds = 20;
     }
 
     private void loadConfig() {
@@ -76,9 +87,15 @@ public class AppConfig {
                 }
             }
 
-            // Генерируем M один раз при создании конфига
+            // Генерация интервалов один раз при создании конфига
             Random random = new Random();
-            logRetentionSeconds = 1 + random.nextInt(maxLogRetentionSeconds - 1); // 1 <= M < max
+
+            // 500-5000 мс
+            phoneUpdateInterval = generateRandomPhoneUpdateInterval();
+            // 60-300 сек
+            dbDumpInterval = dbDumpMinInterval + random.nextInt(dbDumpMaxInterval - dbDumpMinInterval);
+            // 1 <= M < max
+            logRetentionSeconds = 1 + random.nextInt(maxLogRetentionSeconds - 1);
 
             LOGGER.info("Конфигурация успешно загружена из файла");
         } catch (IOException e) {
@@ -96,20 +113,27 @@ public class AppConfig {
                 "Records: " + numRecords + "\n" +
                 "Phone update interval: " + phoneUpdateMinInterval + "-" + phoneUpdateMaxInterval + "ms\n" +
                 "DB dump interval: " + dbDumpMinInterval + "-" + dbDumpMaxInterval + "s\n" +
+                "Max contacts to update: " + maxContactsToUpdate + "s\n" +
                 "Max log retention in seconds: " + logRetentionSeconds + "s\n" +
-                "Max contacts to update: " + maxContactsToUpdate);
+                "Phone update interval in milliseconds: " + phoneUpdateInterval + "s\n" +
+                "Application runtime in seconds: " + dbDumpInterval + "s\n");
     }
+
 
     // Геттеры
     public String getDbName() { return dbName; }
     public String getTableName() { return tableName; }
     public int getNumRecords() { return numRecords; }
     public String[] getNames() { return names; }
+    public String getLogTableName() { return logTableName; }
+
     public int getPhoneUpdateMinInterval() { return phoneUpdateMinInterval; }
     public int getPhoneUpdateMaxInterval() { return phoneUpdateMaxInterval; }
     public int getDbDumpMinInterval() { return dbDumpMinInterval; }
     public int getDbDumpMaxInterval() { return dbDumpMaxInterval; }
     public int getMaxContactsToUpdate() { return maxContactsToUpdate; }
+    public int getMaxLogRetentionSeconds() { return maxLogRetentionSeconds; }
     public int getLogRetentionSeconds() { return logRetentionSeconds; }
-    public String getLogTableName() { return logTableName; }
+    public int getPhoneUpdateInterval() { return phoneUpdateInterval; }
+    public int getDbDumpInterval() { return dbDumpInterval; }
 }

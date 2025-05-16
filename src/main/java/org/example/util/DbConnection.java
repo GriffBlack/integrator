@@ -8,9 +8,16 @@ import java.util.logging.Logger;
 
 public class DbConnection {
     private static final Logger LOGGER = Logger.getLogger(DbConnection.class.getName());
-    private static AppConfig config = new AppConfig();
+    private static AppConfig config;
 
-    public static Connection getConnection() throws SQLException {
+    public static void initialize(AppConfig appConfig) {
+        config = appConfig;
+    }
+
+        public static Connection getConnection() throws SQLException {
+        if (config == null) {
+            throw new IllegalStateException("Конфигурация не инициализирована");
+        }
         String url = "jdbc:sqlite:" + System.getProperty("user.dir") + "/" + config.getDbName();
         LOGGER.fine("Подключение к базе данных: " + url);
         return DriverManager.getConnection(url);

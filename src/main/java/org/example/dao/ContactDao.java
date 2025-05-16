@@ -12,10 +12,13 @@ public class ContactDao {
     private static final Logger LOGGER = Logger.getLogger(ContactDao.class.getName());
     private final String tableName;
     private PreparedStatement batchStatement;
+    private final AppConfig config;
 
-    public ContactDao(String tableName) {
+    // Поправить добавление конфига и таблицы из него
+    public ContactDao(String tableName, AppConfig config) {
         this.tableName = tableName;
         createTableIfNotExists();
+        this.config = config;
     }
 
     // Добавляем геттер для имени таблицы
@@ -143,27 +146,27 @@ public class ContactDao {
         }
     }
 
-    public List<Contact> getAllContacts(int limit) throws SQLException {
-        String sql = String.format("SELECT id, name, phone FROM %s LIMIT ?", tableName);
-        List<Contact> contacts = new ArrayList<>();
-        LOGGER.fine("Получение " + limit + " контактов");
+//    public List<Contact> getAllContacts(int limit) throws SQLException {
+//        String sql = String.format("SELECT id, name, phone FROM %s LIMIT ?", tableName);
+//        List<Contact> contacts = new ArrayList<>();
+//        LOGGER.fine("Получение " + limit + " контактов");
+//
+//        try (Connection conn = DbConnection.getConnection();
+//             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+//            pstmt.setInt(1, limit);
+//
+//            try (ResultSet rs = pstmt.executeQuery()) {
+//                while (rs.next()) {
+//                    Contact contact = new Contact(rs.getString("name"), rs.getString("phone"));
+//                    contact.setId(rs.getInt("id"));
+//                    contacts.add(contact);
+//                }
+//            }
+//        }
+//        return contacts;
+//    }
 
-        try (Connection conn = DbConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, limit);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    Contact contact = new Contact(rs.getString("name"), rs.getString("phone"));
-                    contact.setId(rs.getInt("id"));
-                    contacts.add(contact);
-                }
-            }
-        }
-        return contacts;
-    }
-
-    public void createLoggingInfrastructure(AppConfig config) throws SQLException {
+    public void createLoggingInfrastructure() throws SQLException {
         int m = config.getLogRetentionSeconds();
         String logsTableName = config.getLogTableName();
 
@@ -173,12 +176,12 @@ public class ContactDao {
         try (Connection conn = DbConnection.getConnection();
              Statement stmt = conn.createStatement()) {
 
-            stmt.execute("CREATE TABLE IF NOT EXISTS logsTableName (" +
+            stmt.execute("CREATE TABLE IF NOT EXISTS " + logsTableName +  " (" +
                     "log_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "contact_id INTEGER NOT NULL, " +
                     "old_phone TEXT NOT NULL, " +
                     "change_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-                    "FOREIGN KEY(contact_id) REFERENCES contacts(id))");
+                    "FOREIGN KEY(contact_id) REFERENCES " + tableName + "(id))");
 
             deleteAll(logsTableName);
 
@@ -197,6 +200,15 @@ public class ContactDao {
                     tableName, logsTableName, logsTableName, m);
 
             stmt.execute(triggerSQL);
+        }
+    }
+
+    public void dropLogTrigger() throws SQLException {
+        try (Connection conn = DbConnection.getConnection();
+             Statement stmt = conn.createStatement()) {
+
+            stmt.execute("DROP TRIGGER IF EXISTS " + config.getLogTableName() );
+            LOGGER.info("Триггер логирования удален");
         }
     }
 }

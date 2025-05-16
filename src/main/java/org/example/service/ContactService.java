@@ -24,7 +24,7 @@ public class ContactService {
 
     public ContactService(AppConfig config) {
         LOGGER.info("Инициализация ContactService с конфигурацией...");
-        this.contactDao = new ContactDao(config.getTableName());
+        this.contactDao = new ContactDao(config.getTableName(), config);
         this.names = config.getNames();
         this.numRecords = config.getNumRecords();
         this.maxContactsToUpdate = config.getMaxContactsToUpdate();
@@ -42,6 +42,10 @@ public class ContactService {
         } else {
             generateData();
         }
+
+        //  Инициализация системы логирования
+        LOGGER.info("Инициализация системы логирования...");
+        contactDao.createLoggingInfrastructure();
     }
 
     private boolean shouldRegenerateData() {
@@ -118,6 +122,14 @@ public class ContactService {
         return String.format("%03d-%05d", random.nextInt(900) + 100, random.nextInt(100000));
     }
 
+    public void cleanupDatabase() {
+        try {
+            contactDao.dropLogTrigger();
+            LOGGER.info("Очистка базы данных выполнена");
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Ошибка при очистке базы данных", e);
+        }
+    }
     public ContactDao getContactDao() {
         return contactDao;
     }
